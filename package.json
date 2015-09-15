@@ -1,0 +1,26 @@
+{
+  "name": "21-mvc-app",
+  "version": "1.0.0",
+  "description": "21 game mvc",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Connor Smallman",
+  "license": "ISC",
+  "dependencies": {
+    "babel-runtime": "^5.8.24",
+    "babelify": "^6.3.0",
+    "backbone": "^1.2.2",
+    "backbone.marionette": "^2.4.2",
+    "browserify": "^11.0.1",
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.6",
+    "handlebars": "^3.0.3",
+    "hbsfy": "^2.2.1",
+    "jquery": "^2.1.4",
+    "underscore": "^1.8.3",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.3.1"
+  }
+}
