@@ -6,15 +6,21 @@ var hbsfy = require('hbsfy');
 var watchify = require('watchify');
 var gutil = require('gulp-util');
 
-gulp.task('bundle', function() {
-	var bundle = browserify('./app.js', {
-			debug: true,
-			cache: {},
-			packageCache: {},
-			fullPaths: true
-		});
+var b = watchify(browserify('./app.js', {
+	debug: true,
+	cache: {},
+	packageCache: {},
+	fullPaths: true
+}));
 
-	return bundle
+b.on('update', bundle);
+b.on('log', gutil.log);
+b.on('error', gutil.log);
+
+gulp.task('bundle', bundle);
+
+function bundle() {
+	return b
 		.transform(babelify.configure({
  			optional: ["runtime"]
 		}))
@@ -23,6 +29,7 @@ gulp.task('bundle', function() {
 		.pipe(source('app.min.js'))
 		.pipe(gulp.dest('./dist/'))
 		.on('error', gutil.log);
-});
+}
+
 
 gulp.task('default', ['bundle']);
