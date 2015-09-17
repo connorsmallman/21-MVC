@@ -79,7 +79,7 @@ let App = Marionette.Application.extend({
 	isBust(player) {
 		var value = this.tableView.getRegion(player + 'Hand').currentView.collection
 						.map(model => model.getValue())
-						.reduce((memo, num) => { return memo + num });
+						.reduce((memo, num) => memo + num);
 
 		return (value > 21) ? true : false;
 	}
