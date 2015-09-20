@@ -5,6 +5,7 @@ var babelify = require('babelify');
 var hbsfy = require('hbsfy');
 var watchify = require('watchify');
 var gutil = require('gulp-util');
+var plumber = require('gulp-plumber');
 
 var b = watchify(browserify('./app.js', {
 	debug: true,
@@ -26,9 +27,9 @@ function bundle() {
 		}))
 		.transform(hbsfy)
 		.bundle()
+		.pipe(plumber())
 		.pipe(source('app.min.js'))
-		.pipe(gulp.dest('./dist/'))
-		.on('error', gutil.log);
+		.pipe(gulp.dest('./dist/'));
 }
 
 

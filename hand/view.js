@@ -1,35 +1,31 @@
+'use strict';
+
 import Marionette from 'backbone.marionette';
 import Backbone from 'backbone';
 import _ from 'underscore';
 import CardView from '../card/view';
-import template from './template.hbs';
+import BackboneRadio from 'backbone.radio';
 
-export default Marionette.CompositeView.extend({
+let handValueChannel = BackboneRadio.channel('handValueChannel');
+
+export default Marionette.CollectionView.extend({
 	initialize(options) {
 		this.isDealer = options.isDealer || false;
+		this.playerName = options.playerName;
+		this.listenTo(this.collection, 'add', this.updateHandValue);
 	},
-	collectionEvents: {
-		'add': 'cardAdded'
-	},
-	cardAdded() {
-		this.updateHandValue();
-	},
-	className: 'hand',
-	template: template,
 	childView: CardView,
-	childViewContainer: '#handCards',
 	onBeforeRender() {
 		this.updateHandValue();
-		//hide first card is isDealer;
-		if(this.hideFirstCard) {
-			this.collection.at(0).set({hide: true});
-		}
 	},
 	updateHandValue() {
-		this.model = new Backbone.Model({ handValue: this.getHandValue() });
+		handValueChannel.trigger('card:added', { 
+			playerName: this.playerName, 
+			handValue: this.getHandValue() 
+		});
 	},
 	getHandValue() {
-		let value = _.reduce(_.map(this.collection.models, (model) => model.getValue()), function(memo, model){
+		let value = _.reduce(_.map(this.collection.models, (model) => model.getValue()), (memo, model) => {
 		  if (_.isArray(memo)) {
 		    return [memo[0] + model, memo[1] + model]; 
 		  } else if (_.isArray(model)) {

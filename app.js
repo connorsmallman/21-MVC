@@ -6,8 +6,13 @@ import HandView from './hand/view';
 import HandCollection from './hand/collection';
 import CardModel from './card/model';
 import CardView from './card/view';
+import HandValueView from './values/view';
+import HandValueModel from './values/model';
 import Deck from './deck/deck.js';
 import Player from './player/player.js';
+import BackboneRadio from 'backbone.radio';
+
+let handValueChannel = BackboneRadio.channel('handValueChannel');
 
 let App = Marionette.Application.extend({
 	initialize() {
@@ -19,18 +24,19 @@ let App = Marionette.Application.extend({
 		this.players.player = new Player('player');
 
 		this.layoutView.render();
+
+		handValueChannel.on('card:added', this.updateHandValue, this);
 	},
 	onStart() {
-		let _this = this;
 		//create table
 		this.tableView = new TableView();
 		//render table
 		this.layoutView.getRegion('table').show(this.tableView);
 
 		this.startGame();
-		this.promptPlayer(function(answer) {
+		this.promptPlayer((answer) => {
 			if (answer.toLowerCase() === 'hit') {
-				_this.dealToPlayer();
+				this.dealToPlayer();
 			} else {
 
 			}
@@ -55,24 +61,13 @@ let App = Marionette.Application.extend({
 				//repeat step 1
 	},
 	startGame(view) {
-		for (let player in this.players) {
+		for (let n in this.players) {
 			let cards = this.deck.draw(2);
+			let playerName = this.players[n].getName();
+			let view = new HandView({ playerName, collection: new HandCollection(cards) });
 
-			this
-				.tableView
-				.getRegion(this.players[player].getName() + 'Hand')
-				.show(new HandView({ 
-					model: null,
-					collection: new HandCollection(cards)
-				}));
-			
-			if(this.isBust(player)) {
-
-			}
+			this.tableView.getRegion(playerName + 'Hand').show(view);
 		}
-	},
-	updateHand(player){
-		this.layoutView.getRegion('table');
 	},
 	promptPlayer(callback) {
 		var question = prompt('What would you like todo');
@@ -94,7 +89,16 @@ let App = Marionette.Application.extend({
 						});
 
 		return (value > 21) ? true : false;
-	}
+	},
+	updateHandValue(player) {
+		let model = new HandValueModel({handValue: player.handValue });
+		let view = new HandValueView({ model });
+
+		this
+			.tableView
+			.getRegion(player.playerName + 'HandValue')
+			.show(view);
+	},
 });
 
 let app = new App();

@@ -7,7 +7,9 @@ export default Marionette.LayoutView.extend({
 	},
 	template: template,
 	regions: {
+    dealerHandValue: '#dealerHandValueContainer',
 		dealerHand: '#dealerHandContainer',
+    playerHandValue: '#playerHandValueContainer',
 		playerHand: '#playerHandContainer',
 		pot: '#potContainer'
 	}
