@@ -4,7 +4,6 @@ import LayoutView from './layout/view';
 import TableView from './table/view';
 import HandView from './hand/view';
 import HandCollection from './hand/collection';
-import CardModel from './card/model';
 import CardView from './card/view';
 import HandValueView from './values/view';
 import HandValueModel from './values/model';
@@ -12,7 +11,8 @@ import Deck from './deck/deck.js';
 import Player from './player/player.js';
 import BackboneRadio from 'backbone.radio';
 
-let handValueChannel = BackboneRadio.channel('handValueChannel');
+let playerChannel = BackboneRadio.channel('playerChannel');
+let gameChannel = BackboneRadio.channel('gameChannel');
 
 let App = Marionette.Application.extend({
 	initialize() {
@@ -25,7 +25,9 @@ let App = Marionette.Application.extend({
 
 		this.layoutView.render();
 
-		handValueChannel.on('card:added', this.updateHandValue, this);
+		playerChannel.on('card:added', this.updateHandValue, this);
+		playerChannel.on('winner', this.winner, this);
+		playerChannel.on('loser', this.loser, this);
 	},
 	onStart() {
 		//create table
@@ -34,13 +36,13 @@ let App = Marionette.Application.extend({
 		this.layoutView.getRegion('table').show(this.tableView);
 
 		this.startGame();
-		this.promptPlayer((answer) => {
-			if (answer.toLowerCase() === 'hit') {
-				this.dealToPlayer();
-			} else {
+		// this.promptPlayer((answer) => {
+		// 	if (answer.toLowerCase() === 'hit') {
+		// 		this.dealTo('player');
+		// 	} else {
 
-			}
-		});
+		// 	}
+		// });
 		//setup game
 		//deal 2 cards to each player
 		//check to see if any winner or bust
@@ -76,19 +78,12 @@ let App = Marionette.Application.extend({
 			callback(question);
 		}
 	},
-	dealToPlayer() {
-		this.tableView.getRegion('playerHand').currentView.collection.add(new CardModel(this.deck.draw()));
-		//this.isBust('player');
-	},
-	isBust(player) {
-		var value = this.tableView.getRegion(player + 'Hand').currentView.collection
-						.map(model => model.getValue())
-						.reduce((memo, num) => {
-							console.log(memo);
-							console.log(num);
-						});
-
-		return (value > 21) ? true : false;
+	dealTo(playerName) {
+		this
+			.tableView
+			.getRegion(playerName + 'Hand')
+			.currentView
+			.addCard(this.deck.draw());
 	},
 	updateHandValue(player) {
 		let model = new HandValueModel({handValue: player.handValue });
@@ -99,6 +94,14 @@ let App = Marionette.Application.extend({
 			.getRegion(player.playerName + 'HandValue')
 			.show(view);
 	},
+	winner(playerName) {
+		console.log('winner');
+		alert('winner: ' + playerName);
+	},
+	loser(playerName) {
+		console.log('bust');
+		alert('bust: ' + playerName)
+	}
 });
 
 let app = new App();
