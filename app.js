@@ -55,15 +55,18 @@ let App = Marionette.Application.extend({
 	},
 	startGame(view) {
 		for (let player in this.players) {
-			this.tableView.getRegion(this.players[player].getName() + 'Hand')
-				.show(new HandView({ collection: new HandCollection([this.deck.draw(), this.deck.draw()]) }));
+			this
+				.tableView
+				.getRegion(this.players[player].getName() + 'Hand')
+				.show(new HandView({ collection: new HandCollection([this.deck.draw(), this.deck.draw()])}));
 			
-			if(this.isBust(player))
-				break;
+			if(this.isBust(player)) {
+
+			}
 		}
 	},
 	updateHand(player){
-		this.layoutView.getRegion('table')
+		this.layoutView.getRegion('table');
 	},
 	promptPlayer(callback) {
 		var question = prompt('What would you like todo');
@@ -79,7 +82,10 @@ let App = Marionette.Application.extend({
 	isBust(player) {
 		var value = this.tableView.getRegion(player + 'Hand').currentView.collection
 						.map(model => model.getValue())
-						.reduce((memo, num) => memo + num);
+						.reduce((memo, num) => {
+							console.log(memo);
+							console.log(num);
+						});
 
 		return (value > 21) ? true : false;
 	}
