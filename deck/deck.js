@@ -5,7 +5,6 @@ export default function(options) {
 
 	this.initialize = () => {
 		cards = createCards();
-
 		this.shuffle();
 	};
 
@@ -24,16 +23,14 @@ export default function(options) {
 		}
 	};
 
-	this.draw = () => {
+	this.draw = (amount = 1) => {
 		if (cards.length) {
-    		let card = cards[0]
-			
-			cards.shift();
+			let hand = cards.splice(0, amount);
 
-    		return card;
-    	} else {
-    		return new Error('Deck depleted');
-  		}
+			return (hand.length > 1) ? hand : hand[0];
+  	} else {
+  		return new Error('Deck depleted');
+		}
 	};
 
 	this.regenerate = () => {

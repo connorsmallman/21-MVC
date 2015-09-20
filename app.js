@@ -1,4 +1,5 @@
 import Marionette from 'backbone.marionette';
+import Backbone from 'backbone';
 import LayoutView from './layout/view';
 import TableView from './table/view';
 import HandView from './hand/view';
@@ -55,10 +56,15 @@ let App = Marionette.Application.extend({
 	},
 	startGame(view) {
 		for (let player in this.players) {
+			let cards = this.deck.draw(2);
+
 			this
 				.tableView
 				.getRegion(this.players[player].getName() + 'Hand')
-				.show(new HandView({ collection: new HandCollection([this.deck.draw(), this.deck.draw()])}));
+				.show(new HandView({ 
+					model: null,
+					collection: new HandCollection(cards)
+				}));
 			
 			if(this.isBust(player)) {
 

@@ -12,11 +12,23 @@ export default Marionette.CompositeView.extend({
 		'add': 'cardAdded'
 	},
 	cardAdded() {
-		console.log('card added');
+		this.updateHandValue();
 	},
 	className: 'hand',
 	template: template,
-	templateHelpers() {
+	childView: CardView,
+	childViewContainer: '#handCards',
+	onBeforeRender() {
+		this.updateHandValue();
+		//hide first card is isDealer;
+		if(this.hideFirstCard) {
+			this.collection.at(0).set({hide: true});
+		}
+	},
+	updateHandValue() {
+		this.model = new Backbone.Model({ handValue: this.getHandValue() });
+	},
+	getHandValue() {
 		let value = _.reduce(_.map(this.collection.models, (model) => model.getValue()), function(memo, model){
 		  if (_.isArray(memo)) {
 		    return [memo[0] + model, memo[1] + model]; 
@@ -27,16 +39,6 @@ export default Marionette.CompositeView.extend({
 		  }
 		});
 
-		return {
-			handValue: (_.isArray(value)) ? `<span>${value[0]}</span><span>${value[1]}</span>` : `<span>${value}</span>`
-		}
-	},
-	childView: CardView,
-	childViewContainer: '#handCards',
-	onBeforeRender() {
-		//hide first card is isDealer;
-		if(this.hideFirstCard) {
-			this.collection.at(0).set({hide: true});
-		}
+		return value;
 	}
 });

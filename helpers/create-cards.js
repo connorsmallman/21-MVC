@@ -8,8 +8,8 @@ export default function() {
 		  var value;
 
 		  if (faces[j] === 'Ace') {
-		    value = 11
-		    } else if (isNaN(Number(faces[j]))) {
+		    value = [1, 11];
+		  } else if (isNaN(Number(faces[j]))) {
 		    value = 10;
 		  } else {
 		    value = Number(faces[j]);
